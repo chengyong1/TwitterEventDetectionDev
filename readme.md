@@ -24,7 +24,8 @@
   - `ner`：三种实体组成的字典
   - `wordsWeight`：每个单词及其权重
   - `semanticVector`：由每个单词的word2vec向量得到簇的语义向量
-  
+
+- 斯坦福的推文词向量网址为[斯坦福推文词向量下载](http://nlp.stanford.edu/data/glove.twitter.27B.zip)
 
 ## 三、事件判定模块
 - 事件定义：特定时间和空间内发生的事，还需要有大量人参与讨论
