@@ -23,6 +23,8 @@ class Twitter(object):
         self.time = None
         # 推文发送者名称
         self.username = None
+        # 推文语义向量
+        self.semanticVector = None
 
         self.text = tweet.get("text")
         self.words = tweet.get("words")
@@ -92,6 +94,10 @@ class Twitter(object):
         if self.username != None:
             self.username = self.username.get("screen_name", "null")
         return self.username
+
+    def getSemanticVector(self):
+        self.semanticVector = [0.0 for i in range(25)]
+        return self.semanticVector
 
     def _removeStopWords(self):
         """去除停词后的单词"""

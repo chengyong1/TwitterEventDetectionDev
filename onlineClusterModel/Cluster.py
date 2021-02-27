@@ -4,7 +4,7 @@ from collections import defaultdict
 class Cluster(object):
     def __init__(self):
         # 簇内推文组成的列表
-        self.testList = []
+        self.textList = []
         # 推文时间组成的列表
         self.timeList = []
         # 推文发送者组成的列表
@@ -18,3 +18,23 @@ class Cluster(object):
         # 由每个单词的word2vec向量得到簇的语义向量
         self.semanticVector = None
 
+    def getTextList(self):
+        return self.textList
+
+    def getTimeList(self):
+        return self.timeList
+
+    def getUserList(self):
+        return self.userList
+
+    def getCoordinatesList(self):
+        return self.coordinatesList
+
+    def getLocFreq(self):
+        return self.locFreq
+
+    def getWordsWeight(self):
+        return self.wordsWight
+
+    def getSemanticVector(self):
+        return self.semanticVector
