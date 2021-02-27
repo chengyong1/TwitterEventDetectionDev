@@ -1,6 +1,7 @@
 #coding=utf-8
 from Cluster import Cluster
 from twitterModel.Twitter import Twitter
+from collections import defaultdict
 
 class SinglePass(object):
     def __init__(self, threshold):
@@ -8,6 +9,9 @@ class SinglePass(object):
         self.clustersList = []
         # 相似度阈值，只有当推文与某个簇相似度大于等于此阈值时才会将该推文加入到该簇中
         self.threshold = threshold
+
+    def getClusters(self):
+        return self.clustersList
 
     def addTweet(self, tweet):
         """
@@ -34,6 +38,8 @@ class SinglePass(object):
         if mostSimilar >= self.threshold:
             # 当相似度大于阈值时，将推文放入索引为idx的簇中，并跟新簇信息
             self._update(tweet, idx)
+            # 只保留簇中重要信息，减少内存占用和时间消耗，同时减少噪声带来的影响
+            self._gc(self.clustersList[idx])
         else:
             # 否则新建一个簇，该簇目前仅包含当前推文，并放入簇列表
             self.clustersList.append(self._createCluster(tweet))
@@ -64,10 +70,35 @@ class SinglePass(object):
         :return:
         """
         cluster = self.clustersList[idx]
+        cluster.textList.append(tweet.getText())
+        cluster.timeList.append(tweet.getTime())
+        cluster.userList.append(tweet.getUsername())
+        if tweet.getCoordinates() != None:
+            cluster.coordinatesList.append(tweet.getCoordinates())
+        for word in tweet.getLocs():
+            cluster.locFreq[word] += 1
+        for word, weight in tweet.getWordsWeight().items():
+            cluster.wordsWight[word] += weight
 
 
     def _createCluster(self, tweet):
-        pass
+        """
+        根据该条推文新建一个簇，簇中信息全部来自该推文
+        :param tweet: 推文
+        :return:
+        """
+        cluster = Cluster()
+        cluster.textList.append(tweet.getText())
+        cluster.timeList.append(tweet.getTime())
+        cluster.userList.append(tweet.getUsername())
+        if tweet.getCoordinates() != None:
+            cluster.coordinatesList.append(tweet.getCoordinates())
+        for word in tweet.getLocs():
+            cluster.locFreq[word] += 1
+        for word, weight in tweet.getWordsWeight().items():
+            cluster.wordsWight[word] += weight
+        cluster.semanticVector = tweet.getSemanticVector()
+        return cluster
 
     def _getGeoSimilar(self, tweet, cluster):
         """
@@ -117,3 +148,20 @@ class SinglePass(object):
 
     def _getCoOccurrenceSimilar(self, tweet, cluster):
         return 0
+
+    def _gc(self, cluster):
+        """
+        删除簇中不太重要的信息，对于单词而言，只保留累积权值最高的50个单词即可，这样可以加快文本相似度计算的速度，也能减小内存占用
+        :param cluster: 簇
+        :return:
+        """
+        temp = cluster.getWordsWeight().items()
+        if len(temp) >= 100:
+            # 按照单词累积权值从大到小排序，并只保留前50个
+            temp = sorted(temp, key=lambda item: -item[1], reverse=True)[:50]
+            dic = defaultdict(lambda: 0.0)
+            for word, weight in temp:
+                dic[word] += weight
+            cluster.wordsWight = dic
+
+

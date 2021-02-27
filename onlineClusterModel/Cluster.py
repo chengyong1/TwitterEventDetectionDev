@@ -38,3 +38,13 @@ class Cluster(object):
 
     def getSemanticVector(self):
         return self.semanticVector
+
+    def __str__(self):
+        """
+        重载toString()方法，打印出簇中需要的信息，方便调试
+        :return:
+        """
+        textInfo = '\n'.join(self.textList[:30])
+        return "num: " + str(len(self.textList)) + \
+               ", locsFreq: " + str(self.getLocFreq().keys()) + '\n' + \
+               textInfo + '\n'

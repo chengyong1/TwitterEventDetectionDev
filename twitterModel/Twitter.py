@@ -99,6 +99,9 @@ class Twitter(object):
         self.semanticVector = [0.0 for i in range(25)]
         return self.semanticVector
 
+    def getTime(self):
+        return self.time
+
     def _removeStopWords(self):
         """去除停词后的单词"""
         temp = []
