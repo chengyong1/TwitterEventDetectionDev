@@ -8,5 +8,6 @@ cursor = tweet_db.find()
 test = SinglePass()
 for tweet in cursor:
     test.addTweet(tweet)
+    print tweet
 
 
